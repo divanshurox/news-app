@@ -1,21 +1,60 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import { NavigationContainer } from "@react-navigation/native";
+
+import { createStackNavigator } from "@react-navigation/stack";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
+import * as Font from "expo-font";
+import { AppLoading } from "expo";
+
+// Importing Screens
+import Feed from "./screens/Feed";
+import Article from "./screens/Article";
+import FinanceScreen from "./screens/Finance";
+import PoliticsScreen from "./screens/Politics";
+import TechScreen from "./screens/Tech";
+
+const fetchFonts = () => {
+  return Font.loadAsync({
+    "open-sans": require("./assets/Fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/Fonts/OpenSans-Bold.ttf"),
+    "berkshire-swash": require('./assets/Fonts/BerkshireSwash-Regular.ttf'),
+    "kaushan-script": require('./assets/Fonts/KaushanScript-Regular.ttf')
+  });
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const StackScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Feed" component={Feed} />
+      <Stack.Screen name="Article" component={Article} />
+    </Stack.Navigator>
+  );
+};
+
+export default function App() {
+  const [load, setLoad] = useState(false);
+  if (!load) {
+    return (
+      <AppLoading startAsync={fetchFonts} onFinish={() => setLoad(true)} />
+    );
+  }
+  return (
+    <NavigationContainer>
+      <Drawer.Navigator>
+        <Drawer.Screen
+          name="Stack"
+          options={{ title: "Feed" }}
+          component={StackScreen}
+        />
+        <Drawer.Screen name="Politics" component={PoliticsScreen} />
+        <Drawer.Screen name="Tech" component={TechScreen} />
+        <Drawer.Screen name="Finance" component={FinanceScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
+  );
+}
